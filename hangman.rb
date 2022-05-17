@@ -1,9 +1,7 @@
-
 module Getting_input
-
   def message_for_try
     p "pick a letter a - z"
-  end 
+  end
 
   def get_letter
     p message_for_try
@@ -12,7 +10,7 @@ module Getting_input
 
   def get_user_input
     loop do
-      move = get_letter
+    move = get_letter
     next if !valid_input?(move) && dont_cheat
     break p move
   end
@@ -57,11 +55,11 @@ class Game_prep
         word = get_word(number)
       end
       p word
-    self.word = word
+    self.word = word.chomp
   end
   
   def random_number
-    rand(1..49)
+    rand(1..400)
   end
 
   p "Game_prep initalized"
@@ -70,11 +68,27 @@ end
 class Game
   include Getting_input
 
-  attr_accessor
+  attr_accessor :secret_hash
   attr_reader :secret_word
 
   def initialize(secret_word = "")
     @secret_word = secret_word
+    @secret_hash = ""
+  end
+
+  def word_to_hash(secret_word)
+    split_word = secret_word.split("")
+    p split_word
+    split_word.map.with_index { | letter, idx |
+      [idx, letter] }.to_h
+  end
+
+  def set_secret_hash
+    self.secret_hash = word_to_hash(secret_word)
+  end
+
+  def print
+    p secret_hash
   end
 
   
@@ -91,3 +105,5 @@ p word_export
 new_game = Game.new(word_export)
 p "pozniej"
 new_game.get_user_input
+new_game.set_secret_hash
+new_game.print
