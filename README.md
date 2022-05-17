@@ -7,6 +7,8 @@ establish format - separate rows, array? (to.array(",")
 loop -> until word.length(5<12)
 secret_word=loop()
 
+rozpoczecie gry to random number w loop
+
 class game
 @secret_word
 
