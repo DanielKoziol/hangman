@@ -30,10 +30,12 @@ end
 class Game_prep
   FILE = File.open('english_words.txt', 'r')
 
-  attr_accessor :word
+  attr_accessor :word, :secret_hash, :blank_guess
 
   def initialize
     @word = ""
+    @secret_hash = {}
+    @blank_guess = {}
   end
 
   def get_word (number)
@@ -42,7 +44,7 @@ class Game_prep
     until count == number
       p "#{count} #{FILE.gets}"
       count += 1
-        end
+    end
     line = FILE.gets
     p line
   end
@@ -62,34 +64,56 @@ class Game_prep
     rand(1..400)
   end
 
-  p "Game_prep initalized"
-end
-
-class Game
-  include Getting_input
-
-  attr_accessor :secret_hash
-  attr_reader :secret_word
-
-  def initialize(secret_word = "")
-    @secret_word = secret_word
-    @secret_hash = ""
-  end
-
-  def word_to_hash(secret_word)
-    split_word = secret_word.split("")
+  def word_to_hash
+    split_word = word.split("")
     p split_word
     split_word.map.with_index { | letter, idx |
       [idx, letter] }.to_h
   end
 
   def set_secret_hash
-    self.secret_hash = word_to_hash(secret_word)
+    self.secret_hash = word_to_hash
+  end  
+
+  def mask_letters
+    secret_hash.map {| key, value |
+      value = "_"}.join(" ")
+  end
+
+  def set_blank_guess
+    self.blank_guess = mask_letters
+  end
+
+
+  p "Game_prep initalized"
+end
+
+class Game
+  include Getting_input
+
+  attr_accessor :hash_result
+  attr_reader :secret_hash
+
+  def initialize(secret_hash, hash_result)
+    #@secret_word = secret_word
+    @secret_hash = secret_hash
+    @hash_result = hash_result
+  end
+
+  def check_move(move)
+
+  end
+
+  def current_state(secret_hash)
+
   end
 
   def print
+    p "Game"
     p secret_hash
+    p hash_result
   end
+
 
   
   p "Game initalized"
@@ -99,11 +123,12 @@ end
 w = Game_prep.new
 num = w.random_number
 word = w.get_word(num)
-word_export = w.check_word(word, num)
-p word_export
+w.check_word(word, num)
+p w.set_secret_hash
+p w.set_blank_guess
 
-new_game = Game.new(word_export)
-p "pozniej"
+new_game = Game.new(w.set_secret_hash, w.blank_guess)
+p "new Game!"
 new_game.get_user_input
-new_game.set_secret_hash
+
 new_game.print
