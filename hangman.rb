@@ -90,6 +90,14 @@ class GamePrep
     self.blank_guess = mask_letters
   end
 
+  def game_prep
+    num = random_number
+    word = get_word(num)
+    check_word(word, num)
+    p set_secret_hash
+    p set_blank_guess
+  end
+
 
   p "Game_prep initalized"
 end
@@ -158,12 +166,9 @@ class Game
   p "Game initalized"
 end
 
+
   w = GamePrep.new
-  num = w.random_number
-  word = w.get_word(num)
-  w.check_word(word, num)
-  p w.set_secret_hash
-  p w.set_blank_guess
+  w.game_prep
 
   new_game = Game.new(w.set_secret_hash, w.blank_guess)
   p "new Game!"
