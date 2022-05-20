@@ -1,21 +1,29 @@
 module SaveGame
-  def save_game
-    p "gameSaved"
+  #def save_game
+   # p "saving Game:"
+ # end
+
+  #json_saved = hash_save.to_json
+
+  #p json_saved
+
+  def save_to_file
+  File.open("#{save_name}.txt", "w"){ |somefile| somefile.puts json_saved}
   end
 end
 
 module GettingInput
   def message_for_try
-    p "pick a letter a - z"
+    p "pick a letter a - z or write 'save' to save the game"
   end
 
   def get_letter
-    p message_for_try
     gets.chomp.downcase
   end
 
   def get_user_input
     loop do
+    message_for_try
     move = get_letter
     next if !valid_input?(move) && dont_cheat
     break p move
@@ -128,7 +136,9 @@ class Game
 
   def get_input_letter
     try = get_user_input
-    self.tried_letters << try
+    unless try == "save" 
+      self.tried_letters << try
+    end
     try
   end
 
@@ -154,7 +164,7 @@ class Game
   end
 
   def print
-   p "prinitng"
+   p "printng"
    p secret_hash
    p current_result
    p tried_letters
@@ -164,23 +174,65 @@ class Game
   def playing_game
     while round_count_check do # add win condition for end-game
       get_input = get_input_letter
-      get_input == "save" && save_game && break
+      if get_input == "save"
+        save_game
+        p "thanks for a game"
+        break
+      else
       check_for_match(get_input) && update_current_result
       print
+      end
     end
   end
 
+  def export_game
+    {:secret_hash => secret_hash,
+    :current_result => current_result,
+    :tried_letters => tried_letters,
+    :round_count => round_count}
+  end
+
+
+  def save_game
+    p "saving Game, input a save name:"
+    #p export_game.to_json
+    filename = "#{get_letter}.txt"
+    File.open(filename, "w") do |file|
+      file.puts JSON.dump(export_game)
+    end
+  end
 
   
   p "Game initalized"
 end
 
 #new game:
+def start_new_game
   w = GamePrep.new
   w.game_prep
 
   new_game = Game.new(w.set_secret_hash, w.set_blank_guess)
   p "new Game!"
   new_game.playing_game
+end
+
+  def load_game(saved_file)
+    load_game = File.read(saved_file)
+    parsed_load_game = JSON.parse(load_game)
+    p parsed_load_game["secret_hash"]
+    load_secret_hash = parsed_load_game["secret_hash"].map {|k, v| 
+      p k.to_i, v }.to_h
+    p load_secret_hash
+    loaded = Game.new(load_secret_hash, parsed_load_game["current_result"], parsed_load_game["tried_letters"], parsed_load_game["round_count"])
+    p parsed_load_game["current_result"]#blad dopasowania bo zaladowane liczby to strings zamast integers?
+    loaded.playing_game
+  end
+
+  
+load_game('gra1.txt')
+
+
+
+  #new_game.save_game
 
 #load_game:
