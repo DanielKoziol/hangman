@@ -1,7 +1,9 @@
 module SaveGame
-
-
+  def save_game
+    p "gameSaved"
+  end
 end
+
 module GettingInput
   def message_for_try
     p "pick a letter a - z"
@@ -91,11 +93,11 @@ class GamePrep
   end
 
   def game_prep
-    num = random_number
+    num = random_number # might add pick number
     word = get_word(num)
     check_word(word, num)
-    p set_secret_hash
-    p set_blank_guess
+    #p set_secret_hash
+    #p set_blank_guess
   end
 
 
@@ -109,7 +111,7 @@ class Game
   attr_accessor :current_result, :tried_letters, :matched, :round_count
   attr_reader :secret_hash
 
-  def initialize(secret_hash, current_result, tried_letters = [], round_count = 1)
+  def initialize(secret_hash, current_result, tried_letters = [], round_count = 0)
     # @secret_word = secret_word
     @secret_hash = secret_hash
     @current_result = current_result
@@ -126,12 +128,8 @@ class Game
 
   def get_input_letter
     try = get_user_input
-      if try == "save"
-        save_game 
-      else
     self.tried_letters << try
     try
-      end
   end
 
 
@@ -146,11 +144,13 @@ class Game
   end
 
   def update_current_result
+   p current_result
    p matched
    matched.reduce(current_result) do | new_result, (k,v) |
-   new_result[k] = v
+   new_result[k] = v # changes Array outside of method's scope
    p new_result
    end
+   p current_result
   end
 
   def print
@@ -161,19 +161,26 @@ class Game
    p matched
   end
 
+  def playing_game
+    while round_count_check do # add win condition for end-game
+      get_input = get_input_letter
+      get_input == "save" && save_game && break
+      check_for_match(get_input) && update_current_result
+      print
+    end
+  end
+
 
   
   p "Game initalized"
 end
 
-
+#new game:
   w = GamePrep.new
   w.game_prep
 
-  new_game = Game.new(w.set_secret_hash, w.blank_guess)
+  new_game = Game.new(w.set_secret_hash, w.set_blank_guess)
   p "new Game!"
-  while new_game.round_count_check do
-  get_input = new_game.get_input_letter
-  new_game.check_for_match(get_input) && new_game.update_current_result
-  new_game.print
-  end
+  new_game.playing_game
+
+#load_game:
