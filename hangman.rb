@@ -202,6 +202,17 @@ class Game
     end
   end
 
+  def load_game(saved_file)
+    load_game = File.read(saved_file)
+    parsed_load_game = JSON.parse(load_game)
+    load_secret_hash = parsed_load_game["secret_hash"].map {|k, v| [k.to_i, v]}.to_h
+    loaded = Game.new(load_secret_hash, parsed_load_game["current_result"], parsed_load_game["tried_letters"], parsed_load_game["round_count"])
+    p parsed_load_game["current_result"]
+    loaded.playing_game
+  end
+
+
+
   
   p "Game initalized"
 end
@@ -219,20 +230,28 @@ end
   def load_game(saved_file)
     load_game = File.read(saved_file)
     parsed_load_game = JSON.parse(load_game)
-    p parsed_load_game["secret_hash"]
-    load_secret_hash = parsed_load_game["secret_hash"].map {|k, v| 
-      p k.to_i, v }.to_h
-    p load_secret_hash
+    load_secret_hash = parsed_load_game["secret_hash"].map {|k, v| [k.to_i, v]}.to_h
     loaded = Game.new(load_secret_hash, parsed_load_game["current_result"], parsed_load_game["tried_letters"], parsed_load_game["round_count"])
-    p parsed_load_game["current_result"]#blad dopasowania bo zaladowane liczby to strings zamast integers?
+    p parsed_load_game["current_result"]
     loaded.playing_game
   end
 
+  def get_letter
+    gets.chomp.downcase
+  end
+
+def run_program
+  p "do you want to start a new game or load game? - N for new game - Load fro load"
+  user_game = get_letter
+  case user_game 
+  when "n" then start_new_game
+  when "load" 
+    p "state name of game you want to load" 
+    save_name = get_letter
+    load_game(save_name)
+  end
+end
   
-load_game('gra1.txt')
+run_program
+# add the above to the classes, "new game class" -> and then chose what you want to do
 
-
-
-  #new_game.save_game
-
-#load_game:
